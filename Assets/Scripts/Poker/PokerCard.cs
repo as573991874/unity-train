@@ -11,7 +11,7 @@ public enum PokerSuit {
 }
 
 // 数字
-public enum PokerNumber {
+public enum PokerRank {
     Ace = 1,
     Two = 2,
     Three = 3,
@@ -29,8 +29,8 @@ public enum PokerNumber {
 
 public class PokerCard {
     private uint id;
-    private PokerNumber number;
-    private PokerSuit suit;
+    public PokerRank rank { private set; get; }
+    public PokerSuit suit { private set; get; }
     private string desc;
 
     public PokerCard(uint id) {
@@ -38,7 +38,7 @@ public class PokerCard {
             Debug.LogError("PokerCard id error");
         }
         this.id = id;
-        this.number = (PokerNumber)(id % 13 == 0 ? 13 : id % 13);
+        this.rank = (PokerRank)(id % 13 == 0 ? 13 : id % 13);
         this.suit = (PokerSuit)((id - 1) / 13);
 
         StringBuilder sb = new StringBuilder();
@@ -59,50 +59,58 @@ public class PokerCard {
                 break;
         }
 
-        switch (this.number) {
-            case PokerNumber.Ace:
+        switch (this.rank) {
+            case PokerRank.Ace:
                 sb.Append("A");
                 break;
-            case PokerNumber.Two:
+            case PokerRank.Two:
                 sb.Append("2");
                 break;
-            case PokerNumber.Three:
+            case PokerRank.Three:
                 sb.Append("3");
                 break;
-            case PokerNumber.Four:
+            case PokerRank.Four:
                 sb.Append("4");
                 break;
-            case PokerNumber.Five:
+            case PokerRank.Five:
                 sb.Append("5");
                 break;
-            case PokerNumber.Six:
+            case PokerRank.Six:
                 sb.Append("6");
                 break;
-            case PokerNumber.Seven:
+            case PokerRank.Seven:
                 sb.Append("7");
                 break;
-            case PokerNumber.Eight:
+            case PokerRank.Eight:
                 sb.Append("8");
                 break;
-            case PokerNumber.Nine:
+            case PokerRank.Nine:
                 sb.Append("9");
                 break;
-            case PokerNumber.Ten:
+            case PokerRank.Ten:
                 sb.Append("10");
                 break;
-            case PokerNumber.Jack:
+            case PokerRank.Jack:
                 sb.Append("J");
                 break;
-            case PokerNumber.Queen:
+            case PokerRank.Queen:
                 sb.Append("Q");
                 break;
-            case PokerNumber.King:
+            case PokerRank.King:
                 sb.Append("K");
                 break;
             default:
                 break;
         }
         this.desc = sb.ToString();
+    }
+
+    public static int GetRankScore(PokerRank rank) {
+        if (rank == PokerRank.Ace) {
+            return 14;
+        } else {
+            return (int)rank;
+        }
     }
 
     public override string ToString() {
