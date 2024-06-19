@@ -315,3 +315,7 @@ MonoBehaviour:
   - /Users/zhuangshaokun/Downloads/test_zip/last3/assets/arts/ulala/product/vfx.bundle
   - /Users/zhuangshaokun/Downloads/test_zip/last3/assets/arts/ulala/product/scene.bundle
   - /Users/zhuangshaokun/Downloads/test_zip/last3/assets/arts/ulala/product/projectile.bundle
+  url: https://n17x10.xdcdn.net/dev/Test/test.zip
+  filePath: /Users/zhuangshaokun/Downloads/test_zip/character.zip
+  extractPath: /Users/zhuangshaokun/Downloads/test_zip/local/
+  numberOfThreads: 3
