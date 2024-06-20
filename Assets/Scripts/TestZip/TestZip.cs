@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.IO;
 using System;
 using System.Threading.Tasks;
+using System.Linq;
 
 public class TestZip : MonoBehaviour {
     [Header("压缩文件路径")]
@@ -65,6 +66,10 @@ public class TestZip : MonoBehaviour {
 
         if (GUI.Button(new Rect((Screen.width - 100) / 2, 300, 100, 50), "ReadFile")) {
             ReadFileSpeed();
+        }
+
+        if (GUI.Button(new Rect((Screen.width - 100) / 2, 360, 100, 50), "GetFileAsync")) {
+            GetFileAsync();
         }
     }
 
@@ -206,5 +211,72 @@ public class TestZip : MonoBehaviour {
         }
         stopwatch.Stop();
         Debug.Log($"Reading from local file took: {stopwatch.Elapsed.TotalMilliseconds} ms");
+    }
+
+    void GetFileAsync() {
+        // 准备文件夹
+        if (Directory.Exists(zipExtractPath)) {
+            Directory.Delete(zipExtractPath, true);
+        }
+        Directory.CreateDirectory(zipExtractPath);
+
+        System.Object obj = new System.Object();
+        ZipArchive archive = ZipFile.OpenRead(zipFile);
+        var entries = archive.Entries;
+
+        Task.Run(() => {
+            try {
+                Debug.Log("ExtractFileAsync Start");
+                foreach (ZipArchiveEntry entry in entries) {
+                    lock (obj) {
+                        string destinationPath = Path.GetFullPath(Path.Combine(zipExtractPath, entry.FullName));
+                        if (entry.Name == "") {
+                            Directory.CreateDirectory(destinationPath);
+                        } else {
+                            // 创建目录（如果不存在）
+                            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                            // Debug.Log($"GetFileAsync {entry.FullName}");
+                            entry.ExtractToFile(destinationPath, true);
+                        }
+                    }
+                }
+                archive.Dispose();
+                archive = null;
+                Debug.Log("ExtractFileAsync finish");
+            } catch (Exception e) {
+                Debug.Log($"Error {e.Message}");
+            }
+        });
+
+        Task.Run(async () => {
+            try {
+                int count = 0;
+                await Task.Delay(3000);
+                Debug.Log("GetFileAsync Start");
+                while (true) {
+                    lock (obj) {
+                        var entry = archive.GetEntry(readFilePath);
+                        if (entry != null) {
+                            using (Stream zipStream = entry.Open()) {
+                                // 这里可以对 zipStream 进行处理，例如读取内容
+                                using (MemoryStream ms = new MemoryStream()) {
+                                    count++;
+                                    zipStream.CopyTo(ms);
+                                    byte[] byteArray = ms.ToArray();
+                                    Debug.Log($"GetFileAsync {byteArray.Length}");
+                                }
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    await Task.Delay(2000);
+                }
+                Debug.Log($"GetFileAsync finish {count}");
+            } catch (System.Exception ex) {
+                Debug.Log(ex.Message);
+            }
+
+        });
     }
 }
