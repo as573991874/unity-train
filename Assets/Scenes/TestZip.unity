@@ -319,3 +319,6 @@ MonoBehaviour:
   filePath: /Users/zhuangshaokun/Downloads/test_zip/character.zip
   extractPath: /Users/zhuangshaokun/Downloads/test_zip/local/
   numberOfThreads: 3
+  zipFile: /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage.zip
+  zipExtractPath: /Users/zhuangshaokun/Downloads/test_zip/extract
+  readFilePath: assets/scenes/art/windgorge.unity_ab
