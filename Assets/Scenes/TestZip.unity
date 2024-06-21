@@ -309,8 +309,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 762afdd5c65dc4af9917b19d35a71534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPath: /Users/zhuangshaokun/Downloads/test_zip/last3/assets/arts
-  zipDir: /Users/zhuangshaokun/Downloads/test_zip/xxx.zip
+  startPath: /Users/zhuangshaokun/Downloads/test_zip/extract
+  zipDir: /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage.zip
   filesToCompress:
   - /Users/zhuangshaokun/Downloads/test_zip/last3/assets/arts/ulala/product/vfx.bundle
   - /Users/zhuangshaokun/Downloads/test_zip/last3/assets/arts/ulala/product/scene.bundle
@@ -320,5 +320,15 @@ MonoBehaviour:
   extractPath: /Users/zhuangshaokun/Downloads/test_zip/local/
   numberOfThreads: 3
   zipFile: /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage.zip
+  zipFiles:
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage1.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage2.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage3.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage4.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage5.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage6.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage7.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage8.zip
+  - /Users/zhuangshaokun/Downloads/test_zip/package-AllPackage9.zip
   zipExtractPath: /Users/zhuangshaokun/Downloads/test_zip/extract
   readFilePath: assets/scenes/art/windgorge.unity_ab

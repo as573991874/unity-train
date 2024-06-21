@@ -6,6 +6,7 @@ using System.IO;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
+using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 public class TestZip : MonoBehaviour {
     [Header("压缩文件路径")]
@@ -31,6 +32,9 @@ public class TestZip : MonoBehaviour {
     [Header("存在的压缩文件")]
     public string zipFile;
 
+    [Header("存在的压缩文件列表")]
+    public List<string> zipFiles;
+
     [Header("解压后的目录")]
     public string zipExtractPath;
 
@@ -44,12 +48,12 @@ public class TestZip : MonoBehaviour {
 
     void OnGUI() {
         // 屏幕中间按钮
-        if (GUI.Button(new Rect((Screen.width - 100) / 2, 0, 100, 50), "ZipFile")) {
-            ZipFileFunc();
+        if (GUI.Button(new Rect((Screen.width - 100) / 2, 0, 100, 50), "ZipFolder")) {
+            ZipFolderFunc();
         }
 
-        if (GUI.Button(new Rect((Screen.width - 100) / 2, 60, 100, 50), "ZipFile2")) {
-            ZipFileFunc2();
+        if (GUI.Button(new Rect((Screen.width - 100) / 2, 60, 100, 50), "ZipFile")) {
+            ZipFileFunc();
         }
 
         if (GUI.Button(new Rect((Screen.width - 100) / 2, 120, 100, 50), "DownloadSingle")) {
@@ -73,18 +77,20 @@ public class TestZip : MonoBehaviour {
         }
     }
 
-    void ZipFileFunc() {
+    void ZipFolderFunc() {
         // 检查压缩包是否已经存在，如果存在则删除
         if (File.Exists(zipDir)) {
             File.Delete(zipDir);
         }
 
         // 创建压缩包
-        ZipFile.CreateFromDirectory(startPath, zipDir);
+        ZipFile.CreateFromDirectory(startPath, zipDir, CompressionLevel.Optimal, false);
+        ZipFile.CreateFromDirectory(startPath, zipDir + ".fastest", CompressionLevel.Fastest, false);
+        ZipFile.CreateFromDirectory(startPath, zipDir + ".nocompress", CompressionLevel.NoCompression, false);
         Debug.Log("压缩完成！");
     }
 
-    void ZipFileFunc2() {
+    void ZipFileFunc() {
         // 检查压缩包是否已经存在，如果存在则删除
         if (File.Exists(zipDir)) {
             File.Delete(zipDir);
@@ -128,6 +134,8 @@ public class TestZip : MonoBehaviour {
     }
 
     void ExtractSpeed() {
+        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+
         // 准备文件夹
         if (Directory.Exists(zipExtractPath)) {
             Directory.Delete(zipExtractPath, true);
@@ -135,11 +143,37 @@ public class TestZip : MonoBehaviour {
         Directory.CreateDirectory(zipExtractPath);
 
         // 按文件夹解压
-        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Reset();
         stopwatch.Start();
         ZipFile.ExtractToDirectory(zipFile, zipExtractPath);
         stopwatch.Stop();
         Debug.Log($"Extracting by folder took: {stopwatch.Elapsed.TotalSeconds} seconds");
+
+        // 准备文件夹
+        if (Directory.Exists(zipExtractPath)) {
+            Directory.Delete(zipExtractPath, true);
+        }
+        Directory.CreateDirectory(zipExtractPath);
+
+        // 按文件夹解压 faster
+        stopwatch.Reset();
+        stopwatch.Start();
+        ZipFile.ExtractToDirectory(zipFile + ".fastest", zipExtractPath);
+        stopwatch.Stop();
+        Debug.Log($"Extracting fastet by folder took: {stopwatch.Elapsed.TotalSeconds} seconds");
+
+        // 准备文件夹
+        if (Directory.Exists(zipExtractPath)) {
+            Directory.Delete(zipExtractPath, true);
+        }
+        Directory.CreateDirectory(zipExtractPath);
+
+        // 按文件夹解压 nocompress
+        stopwatch.Reset();
+        stopwatch.Start();
+        ZipFile.ExtractToDirectory(zipFile + ".nocompress", zipExtractPath);
+        stopwatch.Stop();
+        Debug.Log($"Extracting nocompress by folder took: {stopwatch.Elapsed.TotalSeconds} seconds");
 
         // 清理文件夹
         if (Directory.Exists(zipExtractPath)) {
@@ -165,6 +199,48 @@ public class TestZip : MonoBehaviour {
         }
         stopwatch.Stop();
         Debug.Log($"Extracting by file took: {stopwatch.Elapsed.TotalSeconds} seconds");
+
+        // 清理文件夹
+        if (Directory.Exists(zipExtractPath)) {
+            Directory.Delete(zipExtractPath, true);
+        }
+        Directory.CreateDirectory(zipExtractPath);
+
+        // 拆分 zip list 解压
+        stopwatch.Reset();
+        stopwatch.Start();
+        for (int i = 0; i < zipFiles.Count; i++) {
+            var file = zipFiles[i];
+            string extractPath = Path.Combine(zipExtractPath, i.ToString());
+            Directory.CreateDirectory(extractPath);
+            ZipFile.ExtractToDirectory(file, extractPath);
+        }
+        stopwatch.Stop();
+        Debug.Log($"Extracting by list took: {stopwatch.Elapsed.TotalSeconds} seconds");
+
+        // 清理文件夹
+        if (Directory.Exists(zipExtractPath)) {
+            Directory.Delete(zipExtractPath, true);
+        }
+        Directory.CreateDirectory(zipExtractPath);
+
+        // 多线程 zip list 解压
+        Task.Run(async () => {
+            stopwatch.Reset();
+            stopwatch.Start();
+            Task[] tasks = new Task[zipFiles.Count];
+            for (int i = 0; i < zipFiles.Count; i++) {
+                var file = zipFiles[i];
+                string extractPath = Path.Combine(zipExtractPath, i.ToString());
+                Directory.CreateDirectory(extractPath);
+                tasks[i] = Task.Run(
+                    () => ZipFile.ExtractToDirectory(file, extractPath)
+                );
+            }
+            await Task.WhenAll(tasks);
+            stopwatch.Stop();
+            Debug.Log($"Extracting by multi thread took: {stopwatch.Elapsed.TotalSeconds} seconds");
+        });
     }
 
     void ReadFileSpeed() {
