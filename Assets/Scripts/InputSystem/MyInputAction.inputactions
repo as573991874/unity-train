@@ -1,0 +1,34 @@
+{
+    "name": "MyInputAction",
+    "maps": [
+        {
+            "name": "My",
+            "id": "1f7b86e6-afdc-4841-b375-7eb2f17bf6b2",
+            "actions": [
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "91935746-3b0a-470e-ab4e-1b52314c3382",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fb8ab64f-e5bb-48e9-89c2-34adb1e0d209",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
